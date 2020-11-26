@@ -5,6 +5,7 @@ import {ClassService} from "./classes.service";
 import {ClassController} from "./classes.controller";
 import {Class} from "./entities/class.entity";
 import {User} from "../users/entity/user.entity";
+import {Lesson} from "../lessons/entities/lesson.entity";
 
 @Module({
   imports: [

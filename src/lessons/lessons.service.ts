@@ -28,16 +28,16 @@ export class LessonsService {
         return this.lessonsRepo.find({
             skip: page,
             take: limit,
-            relations: ['content.videos', 'content.keynotes']
+            relations: ['videos', 'keynotes']
         });
     }
 
-    async findOne(hash: string) {
-        const lesson = await this.lessonsRepo.findOne({hash: hash},
-          {relations: ['content.videos', 'content.keynotes']}
+    async findOne(lessonHash: string) {
+        const lesson = await this.lessonsRepo.findOne({hash: lessonHash},
+          {relations: ['videos', 'keynotes']}
           );
         if (!lesson) {
-            throw new NotFoundException(`No such lessonHash: №${hash} found`);
+            throw new NotFoundException(`No such lessonHash: №${lessonHash} found`);
         }
         return lesson;
     }
@@ -50,17 +50,13 @@ export class LessonsService {
     async update(lessonHash: string, updateLessonDto: UpdateLessonDto) {
         const lesson = await this.lessonsRepo.findOne({hash: lessonHash});
         if (!lesson) {
-            throw new NotFoundException(`Lesson with hash: ${lessonHash} not found`);
+            throw new NotFoundException(`No such lessonHash: №${lessonHash} found`);
         }
 
         const lessonPreload = await this.lessonsRepo.preload({
-            hash: lessonHash,
+            id: lesson.id,
+            hash: lesson.hash,
             ...updateLessonDto,
-            content: {
-                videos,
-                keynotes
-            }
-
         });
 
         return this.lessonsRepo.save(lessonPreload);
@@ -72,121 +68,121 @@ export class LessonsService {
     }
 
     async findVideo(lessonHash: string, videoHash: string) {
-        const lesson = await this.lessonsRepo.findOne({hash: lessonHash}, { relations: ['content.videos'] });
+        const lesson = await this.lessonsRepo.findOne({hash: lessonHash}, { relations: ['videos'] });
         if (!lesson) {
-            throw new NotFoundException(`Lesson with hash: ${lessonHash} not found`);
+            throw new NotFoundException(`No such lessonHash: №${lessonHash} found`);
         }
 
         const video = await this.videoRepo.findOne({'hash': videoHash});
         if (!video) {
-            throw new NotFoundException(`Video with hash: ${videoHash} not found`);
+            throw new NotFoundException(`No such videoHash: №${videoHash} found`);
         }
 
-        const videoExists = lesson.content.videos.find(video => video.hash === videoHash);
+        const videoExists = lesson.videos.find(video => video.hash === videoHash);
         if (!videoExists) {
-            throw new BadRequestException(`Not found video with hash: ${videoHash} in lesson with hash: ${lessonHash}`);
+            throw new BadRequestException(`No such videoHash: №${videoHash} found in lessonHash: №${lessonHash}`);
         }
 
         return video;
     }
 
     async addVideo(lessonHash: string, videoHash: string) {
-        const lesson = await this.lessonsRepo.findOne({hash: lessonHash}, { relations: ['content.videos'] });
+        const lesson = await this.lessonsRepo.findOne({hash: lessonHash}, { relations: ['videos'] });
         if (!lesson) {
-            throw new NotFoundException(`Lesson with hash: ${lessonHash} not found`);
+            throw new NotFoundException(`No such lessonHash: №${lessonHash} found`);
         }
 
         const video = await this.videoRepo.findOne({'hash': videoHash});
         if (!video) {
-            throw new NotFoundException(`Video with hash: ${videoHash} not found`);
+            throw new NotFoundException(`No such videoHash: №${videoHash} found`);
         }
 
-        const videoExists = lesson.content.videos.find(video => video.hash === videoHash);
+        const videoExists = lesson.videos.find(video => video.hash === videoHash);
         if (videoExists) {
-            throw new BadRequestException(`Video with hash: ${videoHash} is already exists in lesson with hash: ${lessonHash}`);
+            throw new BadRequestException(`VideoHash: №${videoHash} exists in lessonHash: №${lessonHash}`);
 
         }
-        lesson.content.videos.push(video);
+        lesson.videos.push(video);
 
         return this.lessonsRepo.save(lesson);
     }
 
     async deleteVideo(lessonHash: string, videoHash: string) {
-        const lesson = await this.lessonsRepo.findOne({hash: lessonHash}, { relations: ['content.videos'] });
+        const lesson = await this.lessonsRepo.findOne({hash: lessonHash}, { relations: ['videos'] });
         if (!lesson) {
-            throw new NotFoundException(`Lesson with hash: ${lessonHash} not found`);
+            throw new NotFoundException(`No such lessonHash: №${lessonHash} found`);
         }
 
         const video = await this.videoRepo.findOne({'hash': videoHash});
         if (!video) {
-            throw new NotFoundException(`Video with hash: ${videoHash} not found`);
+            throw new NotFoundException(`No such videoHash: №${videoHash} found`);
         }
 
-        const videoExists = lesson.content.videos.find(video => video.hash === videoHash);
+        const videoExists = lesson.videos.find(video => video.hash === videoHash);
         if (!videoExists) {
-            throw new BadRequestException(`Not found video with hash: ${videoHash} in lesson with hash: ${lessonHash}`);
+            throw new BadRequestException(`No such videoHash: №${videoHash} in lessonHash: №${lessonHash}`);
         }
-        lesson.content.videos.splice(lesson.content.videos.indexOf(video), 1);
+        lesson.videos.splice(lesson.videos.indexOf(video), 1);
 
         return this.lessonsRepo.save(lesson);
     }
 
-    async findKeynote(lessonHash: string, keyNoteHash: string) {
-        const lesson = await this.lessonsRepo.findOne({hash: lessonHash}, { relations: ['content.keynotes'] });
+    async findKeynote(lessonHash: string, keynoteHash: string) {
+        const lesson = await this.lessonsRepo.findOne({hash: lessonHash}, { relations: ['keynotes'] });
         if (!lesson) {
-            throw new NotFoundException(`Lesson with hash: ${lessonHash} not found`);
+            throw new NotFoundException(`No such lessonHash: №${lessonHash} found`);
         }
 
-        const keyNote = await this.keynoteRepo.findOne({'hash': keyNoteHash});
-        if (!keyNote) {
-            throw new NotFoundException(`KeyNote with hash: ${keyNoteHash} not found`);
+        const keynote = await this.keynoteRepo.findOne({'hash': keynoteHash});
+        if (!keynote) {
+            throw new NotFoundException(`No such keynoteHash: №${keynoteHash} found`);
         }
 
-        const keyNoteExists = lesson.content.keynotes.find(keyNote => keyNote.hash === keyNoteHash);
-        if (!keyNoteExists) {
-            throw new BadRequestException(`Not found keyNote with hash: ${keyNoteHash} in lesson with hash: ${lessonHash}`);
+        const keynoteExists = lesson.keynotes.find(keynote => keynote.hash === keynoteHash);
+        if (!keynoteExists) {
+            throw new BadRequestException(`No such keynoteHash: №${keynoteHash} found in lessonHash: №${lessonHash}`);
         }
 
-        return keyNote;
+        return keynote;
     }
 
-    async addKeynote(lessonHash: string, keyNoteHash: string) {
-        const lesson = await this.lessonsRepo.findOne({hash: lessonHash}, { relations: ['content.keynotes'] });
+    async addKeynote(lessonHash: string, keynoteHash: string) {
+        const lesson = await this.lessonsRepo.findOne({hash: lessonHash}, { relations: ['keynotes'] });
         if (!lesson) {
-            throw new NotFoundException(`Lesson with hash: ${lessonHash} not found`);
+            throw new NotFoundException(`No such lessonHash: №${lessonHash} found`);
         }
 
-        const keyNote = await this.keynoteRepo.findOne({'hash': keyNoteHash});
-        if (!keyNote) {
-            throw new NotFoundException(`KeyNote with hash: ${keyNoteHash} not found`);
+        const keynote = await this.keynoteRepo.findOne({'hash': keynoteHash});
+        if (!keynote) {
+            throw new NotFoundException(`No such keynoteHash: №${keynoteHash} found`);
         }
 
-        const keyNoteExists = lesson.content.keynotes.find(keyNote => keyNote.hash === keyNoteHash);
-        if (keyNoteExists) {
-            throw new BadRequestException(`KeyNote with hash: ${keyNoteHash} is already exists in lesson with hash: ${lessonHash}`);
+        const keynoteExists = lesson.keynotes.find(keynote => keynote.hash === keynoteHash);
+        if (keynoteExists) {
+            throw new BadRequestException(`KeynoteHash: №${keynoteHash} exists in lessonHash: №${lessonHash}`);
 
         }
-        lesson.content.keynotes.push(keyNote);
+        lesson.keynotes.push(keynote);
 
         return this.lessonsRepo.save(lesson);
     }
 
-    async deleteKeynote(lessonHash: string, keyNoteHash: string) {
-        const lesson = await this.lessonsRepo.findOne({hash: lessonHash}, { relations: ['content.keynotes'] });
+    async deleteKeynote(lessonHash: string, keynoteHash: string) {
+        const lesson = await this.lessonsRepo.findOne({hash: lessonHash}, { relations: ['keynotes'] });
         if (!lesson) {
-            throw new NotFoundException(`Lesson with hash: ${lessonHash} not found`);
+            throw new NotFoundException(`No such lessonHash: №${lessonHash} found`);
         }
 
-        const keyNote = await this.keynoteRepo.findOne({'hash': keyNoteHash});
-        if (!keyNote) {
-            throw new NotFoundException(`KeyNote with hash: ${keyNoteHash} not found`);
+        const keynote = await this.keynoteRepo.findOne({'hash': keynoteHash});
+        if (!keynote) {
+            throw new NotFoundException(`No such keynoteHash: №${keynoteHash} found`);
         }
 
-        const keyNoteExists = lesson.content.keynotes.find(keyNote => keyNote.hash === keyNoteHash);
-        if (!keyNoteExists) {
-            throw new BadRequestException(`Not found keyNote with hash: ${keyNoteHash} in lesson with hash: ${lessonHash}`);
+        const keynoteExists = lesson.keynotes.find(keyNote => keyNote.hash === keynoteHash);
+        if (!keynoteExists) {
+            throw new BadRequestException(`No such keynoteHash: №${keynoteHash} found in lessonHash: №${lessonHash}`);
         }
-        lesson.content.keynotes.splice(lesson.content.keynotes.indexOf(keyNote), 1);
+        lesson.keynotes.splice(lesson.keynotes.indexOf(keynote), 1);
 
         return this.lessonsRepo.save(lesson);
     }

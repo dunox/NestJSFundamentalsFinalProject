@@ -30,22 +30,22 @@ export class Lesson {
     @Column()
     order: number;
 
-    @Column(() => Content)
-    content: Content = new Content();
+    // @Column(() => Content)
+    // content: Content = new Content();
 
     @JoinTable()
     @ManyToMany(
       type => Video,
       (video: Video) => video.lessons
     )
-    contentVideos: Video[];
+    videos: Video[];
 
     @JoinTable()
     @ManyToMany(
       () => Keynote,
       (keynote: Keynote) => keynote.lessons,
     )
-    contentKeynotes: Keynote[];
+    keynotes: Keynote[];
     @ApiHideProperty()
     @ManyToOne(
       () => Class,

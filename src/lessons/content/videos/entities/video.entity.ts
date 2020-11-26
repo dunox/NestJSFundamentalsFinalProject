@@ -28,7 +28,7 @@ export class Video {
 
   @ManyToMany(
     () => Lesson,
-    (lesson: Lesson) => lesson.contentVideos,
+    (lesson: Lesson) => lesson.videos,
   )
   lessons: Lesson[];
 }

@@ -7,13 +7,8 @@ import {APP_PIPE} from "@nestjs/core";
 import {AuthModule} from "./auth/auth.module";
 import {AuthController} from './auth/auth.controller';
 import {AuthService} from "./auth/auth.service";
-import { ClassesController } from './classes/classes.controller';
-import { ClassesService } from './classes/classes.service';
-import { ClassesModule } from './classes/classes.module';
-import { VideosController } from './lessons/content/videos/videos.controller';
-import { VideosService } from './lessons/content/videos/videos.service';
-import { VideosModule } from './lessons/content/videos/videos.module';
-import { KeynotesModule } from './lessons/content/keynotes/keynotes.module';
+import {ClassModule} from "./classes/classes.module";
+import {ContentModule} from "./lessons/content/content.module";
 
 @Module({
   imports: [
@@ -31,15 +26,12 @@ import { KeynotesModule } from './lessons/content/keynotes/keynotes.module';
     }),
     ConfigModule.forRoot(),
     AuthModule,
-    ClassesModule,
-    VideosModule,
-    KeynotesModule,
+    ClassModule,
+    ContentModule,
   ],
   controllers: [
     AppController,
     AuthController,
-    ClassesController,
-    VideosController
   ],
   providers: [
     AppService,
@@ -48,8 +40,6 @@ import { KeynotesModule } from './lessons/content/keynotes/keynotes.module';
       provide: APP_PIPE,
       useClass: ValidationPipe,
     },
-    ClassesService,
-    VideosService
   ],
 })
 export class AppModule {}

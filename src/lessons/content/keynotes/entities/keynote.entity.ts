@@ -28,7 +28,7 @@ export class Keynote {
 
   @ManyToMany(
     () => Lesson,
-    lesson => lesson.contentKeynotes,
+    lesson => lesson.keynotes,
   )
   lessons: Lesson[];
 }

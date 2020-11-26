@@ -20,7 +20,7 @@ import { AuthGuard } from "@nestjs/passport";
 
 @ApiTags('Videos')
 @Controller('videos')
-export class VideosController {
+export class VideoController {
   constructor(public readonly videoService: VideoService) {}
 
   @Post()
