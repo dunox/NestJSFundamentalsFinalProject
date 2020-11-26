@@ -9,11 +9,18 @@ import {AuthController} from './auth/auth.controller';
 import {AuthService} from "./auth/auth.service";
 import {ClassModule} from "./classes/classes.module";
 import {ContentModule} from "./lessons/content/content.module";
+import {UsersModule} from "./users/users.module";
+import {LessonsModule} from "./lessons/lessons.module";
 
 @Module({
   imports: [
-    TypeOrmModule.forRootAsync({
-      useFactory: () => ({
+      ConfigModule.forRoot(),
+      AuthModule,
+      UsersModule,
+      LessonsModule,
+      ClassModule,
+      ContentModule,
+      TypeOrmModule.forRoot({
         type: 'postgres',
         host: process.env.DATABASE_HOST,
         port: +process.env.DATABASE_PORT,
@@ -22,12 +29,7 @@ import {ContentModule} from "./lessons/content/content.module";
         database: process.env.DATABASE_NAME,
         autoLoadEntities: true,
         synchronize: true,
-      }),
     }),
-    ConfigModule.forRoot(),
-    AuthModule,
-    ClassModule,
-    ContentModule,
   ],
   controllers: [
     AppController,

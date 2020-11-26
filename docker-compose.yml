@@ -1,4 +1,4 @@
-version: 3
+version: "3"
 services:
   db:
     image:  postgres
@@ -6,11 +6,15 @@ services:
     ports:
       - "5432:5432"
     environment:
+      POSTGRES_USER: andrey
       POSTGRES_PASSWORD: pass123
+      POSTGRES_DATABASE: final-project
   test-db:
     image: postgres
     restart: always
     ports:
-      - "5433:5433"
+      - "5433:5432"
     environment:
+      POSTGRES_USER: andrey-test
       POSTGRES_PASSWORD: pass123
+      POSTGRES_DATABASE: test-final-project

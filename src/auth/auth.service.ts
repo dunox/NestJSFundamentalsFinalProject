@@ -9,11 +9,13 @@ import {LoginStatus} from "./interfaces/login-status.interface";
 import {RegistrationStatus} from "./interfaces/regisration-status.interface";
 import {Repository} from "typeorm";
 import {User} from "../users/entity/user.entity";
+import {InjectRepository} from "@nestjs/typeorm";
 
 @Injectable()
 export class AuthService {
   constructor(
     // private readonly usersService: UsersService,
+    @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
   ) {}
